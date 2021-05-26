@@ -1,8 +1,4 @@
 {
-    "input_file": "input/test_rg_3.bam",
-    "expected_output": "expected/expected.test_rg_3.bam",
-    "publish_dir": "outdir",
-    "cleanup": true,
-    "cpus": 1,
-    "mem": 0.5
+    "study_id": "TEST-PR",
+    "analysis_id": "9940db0f-c100-496a-80db-0fc100d96ac1"
 }

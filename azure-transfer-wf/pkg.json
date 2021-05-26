@@ -15,13 +15,13 @@
         "url": "https://github.com/icgc-argo/icgc-25k-azure-transfer.git"
     },
     "dependencies": [
-        "github.com/icgc-argo/nextflow-data-processing-utility-tools/song-score-download@2.6.2"
+        "github.com/icgc-argo/nextflow-data-processing-utility-tools/song-score-download@2.6.2",
+        "github.com/icgc-argo/nextflow-data-processing-utility-tools/song-score-upload@2.7.0"
     ],
     "devDependencies": [],
     "contributors": [
         {
-            "name": "Junjun Zhang",
-            "email": "junjun.ca@gmail.com"
+            "name": "Junjun Zhang"
         }
     ],
     "license": "GNU Affero General Public License v3",

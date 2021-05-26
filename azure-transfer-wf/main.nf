@@ -24,34 +24,70 @@ nextflow.enable.dsl = 2
 version = '0.1.0'  // package version
 
 // universal params go here, change default value as needed
-params.container = ""
-params.container_registry = ""
-params.container_version = ""
 params.cpus = 1
 params.mem = 1  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
 params.cleanup = true
 
-include { demoCopyFile } from "./local_modules/demo-copy-file"
-include { SongScoreDownload } from './wfpr_modules/github.com/icgc-argo/nextflow-data-processing-utility-tools/song-score-download@2.6.2/main.nf' params([*:params, 'cleanup': false])
+params.study_id = "TEST-PR"
+params.analysis_id = "9940db0f-c100-496a-80db-0fc100d96ac1"
+
+params.api_token = ""
+params.download_api_token = ""
+params.upload_api_token = ""
+
+params.song_cpus = 1
+params.song_mem = 1  // GB
+params.score_cpus = 1
+params.score_mem = 1  // GB
+params.score_transport_mem = 1  // GB
+
+params.download_song_url = "https://song.rdpc-qa.cancercollaboratory.org"
+params.download_score_url = "https://score.rdpc-qa.cancercollaboratory.org"
+
+params.upload_song_url = "https://song.rdpc-dev.cancercollaboratory.org"
+params.upload_score_url = "https://score.rdpc-dev.cancercollaboratory.org"
+
+
+download_params = [
+    *:params,
+    'song_url': params.download_song_url,
+    'score_url': params.download_score_url,
+    'api_token': params.download_api_token ?: params.api_token
+]
+
+upload_params = [
+    *:params,
+    'song_url': params.upload_song_url,
+    'score_url': params.upload_score_url,
+    'api_token': params.upload_api_token ?: params.api_token
+]
+
+
+include { SongScoreDownload as Download } from './wfpr_modules/github.com/icgc-argo/nextflow-data-processing-utility-tools/song-score-download@2.6.2/main.nf' params(download_params)
+include { SongScoreUpload as Upload } from './wfpr_modules/github.com/icgc-argo/nextflow-data-processing-utility-tools/song-score-upload@2.7.0/main.nf' params(upload_params)
 
 
 // please update workflow code as needed
 workflow AzureTransferWf {
-  take:  // update as needed
-    input_file
+  take:
+    study_id
+    analysis_id
 
+  main:
+    Download(
+      study_id,
+      analysis_id
+    )
 
-  main:  // update as needed
-    demoCopyFile(input_file)
-
-
-  emit:  // update as needed
-    output_file = demoCopyFile.out.output_file
-
+    Upload(
+      study_id,
+      file('NO_FILE'),
+      Download.out.files.flatten(),
+      analysis_id
+    )
 }
 
 
@@ -59,6 +95,7 @@ workflow AzureTransferWf {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   AzureTransferWf(
-    file(params.input_file)
+    params.study_id,
+    params.analysis_id
   )
 }
