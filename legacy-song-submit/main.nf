@@ -44,8 +44,10 @@ params.publish_dir = ""  // set to empty string will disable publishDir
 
 
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
-params.output_pattern = "*.html"  // output file name pattern
+params.api_token = ""
+params.song_url = "https://song.azure-dev.overture.bio"
+params.study_id = "PACA-CA"
+params.payload_json = "NO_FILE"
 
 
 process legacySongSubmit {
@@ -56,20 +58,24 @@ process legacySongSubmit {
   memory "${params.mem} GB"
 
   input:  // input, make update as needed
-    path input_file
+    val song_url
+    val study_id
+    path payload_json
 
   output:  // output, make update as needed
-    path "output_dir/${params.output_pattern}", emit: output_file
+    stdout()
 
   script:
     // add and initialize variables here as needed
+    accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
 
     """
-    mkdir -p output_dir
+    export ACCESS_TOKEN=${accessToken}
 
     main.py \
-      -i ${input_file} \
-      -o output_dir
+      -u ${song_url} \
+      -s ${study_id} \
+      -p ${payload_json} \
 
     """
 }
@@ -79,6 +85,8 @@ process legacySongSubmit {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   legacySongSubmit(
-    file(params.input_file)
+    params.song_url,
+    params.study_id,
+    file(params.payload_json)
   )
 }
