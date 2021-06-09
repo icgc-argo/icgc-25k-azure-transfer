@@ -58,7 +58,6 @@ process legacySongSubmit {
   memory "${params.mem} GB"
 
   input:  // input, make update as needed
-    val song_url
     val study_id
     path payload_json
 
@@ -73,7 +72,7 @@ process legacySongSubmit {
     export ACCESS_TOKEN=${accessToken}
 
     main.py \
-      -u ${song_url} \
+      -u ${params.song_url} \
       -s ${study_id} \
       -p ${payload_json} \
 
@@ -85,7 +84,6 @@ process legacySongSubmit {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   legacySongSubmit(
-    params.song_url,
     params.study_id,
     file(params.payload_json)
   )
