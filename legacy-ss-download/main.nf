@@ -44,8 +44,12 @@ params.publish_dir = ""  // set to empty string will disable publishDir
 
 
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
-params.output_pattern = "*.html"  // output file name pattern
+params.api_token = ""
+params.song_url = "https://song.cancercollaboratory.org"
+params.score_url = "https://score.cancercollaboratory.org"
+params.study_id = "PACA-CA"
+params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a60"
+params.metadata_only = null
 
 
 process legacySsDownload {
@@ -56,20 +60,29 @@ process legacySsDownload {
   memory "${params.mem} GB"
 
   input:  // input, make update as needed
-    path input_file
+    val study_id
+    val analysis_id
 
   output:  // output, make update as needed
-    path "output_dir/${params.output_pattern}", emit: output_file
+    path "output_dir/*.payload.json", emit: payload_json
+    path "output_dir/data/*", emit: data_file optional true
 
   script:
     // add and initialize variables here as needed
+    accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
+    arg_score_url = params.score_url ? "-r ${params.score_url}" : ""
+    arg_metadata_only = params.metadata_only ? "-m" : ""
 
     """
+    export ACCESS_TOKEN=${accessToken}
+
     mkdir -p output_dir
 
     main.py \
-      -i ${input_file} \
-      -o output_dir
+      -u ${params.song_url} \
+      -s ${study_id} \
+      -a ${analysis_id} \
+      -o output_dir ${arg_score_url} ${arg_metadata_only}
 
     """
 }
@@ -79,6 +92,7 @@ process legacySsDownload {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   legacySsDownload(
-    file(params.input_file)
+    params.study_id,
+    params.analysis_id
   )
 }
