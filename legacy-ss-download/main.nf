@@ -46,7 +46,7 @@ params.publish_dir = ""  // set to empty string will disable publishDir
 // tool specific parmas go here, add / change as needed
 params.api_token = ""
 params.song_url = "https://song.cancercollaboratory.org"
-params.score_url = "https://score.cancercollaboratory.org"
+params.score_url = "https://storage.cancercollaboratory.org"
 params.study_id = "PACA-CA"
 params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a60"
 params.metadata_only = null
