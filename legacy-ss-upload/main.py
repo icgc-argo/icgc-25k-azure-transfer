@@ -23,8 +23,64 @@
 
 import os
 import sys
+import json
 import argparse
 import subprocess
+import requests
+
+
+def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_files=list()):
+    file_names = [os.path.basename(f) for f in data_files]
+
+    # prepare manifest file
+    url = f'{song_url}/studies/{study_id}/analysis/{analysis_id}'
+    headers = {"Authorization": f"Bearer {access_token}"}
+    res = requests.get(url, headers=headers)
+
+    if res.status_code == 200:
+        payload_dict = json.loads(res.text)
+        if payload_dict['analysisState'] != 'UNPUBLISHED':
+            sys.exit(f'SONG analysis object not in UNPUBLISHED state, file upload not permitted.')
+
+        cwd = os.getcwd()
+        with open('manifest.txt', 'w') as m:
+            m.write(f"{analysis_id}\t\t\n")
+            for f in payload_dict['file']:
+                if f['fileName'] not in file_names:
+                    sys.exit(f"File '{f['fileName']}' exists in SONG payload, but not provided for upload.")
+
+                file_path = os.path.join(cwd, f['fileName'])
+                m.write(f"{f['objectId']}\t{file_path}\t{f['fileMd5sum']}\n")
+
+    else:
+        sys.exit(f'Unable to retieve SONG analysis object {analysis_id}')
+
+    # score client upload
+    upload_cmd = f'METADATA_URL={song_url} STORAGE_URL={score_url} ACCESSTOKEN={access_token}'
+    upload_cmd += ' score-client upload --manifest manifest.txt'
+
+    proc = subprocess.Popen(
+                upload_cmd,
+                shell=True,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+    stdout, stderr = proc.communicate()
+
+    if proc.returncode:  # error occurred
+        print(f"SCORE upload failed, more info: {stderr}", file=sys.stderr)
+        sys.exit(proc.returncode)
+
+    # publish song analysis
+    url = f'{song_url}/studies/{study_id}/analysis/publish/{analysis_id}'
+    headers = {"Authorization": f"Bearer {access_token}"}
+    res = requests.put(url, headers=headers)
+
+    if res.status_code != 200:
+        sys.exit(f'Data files uploaded, but unable to publish SONG analysis. More info: {res.text}')
+    else:
+        print('Data files uploaded, SONG analysis published.')
 
 
 def main():
@@ -35,21 +91,23 @@ def main():
     """
 
     parser = argparse.ArgumentParser(description='Tool: legacy-ss-upload')
-    parser.add_argument('-i', '--input-file', dest='input_file', type=str,
-                        help='Input file', required=True)
-    parser.add_argument('-o', '--output-dir', dest='output_dir', type=str,
-                        help='Output directory', required=True)
+    parser.add_argument('-u', '--song-url', type=str, help='SONG (metadata) server URL', required=True)
+    parser.add_argument('-r', '--score-url', type=str, help='SCORE (data) server URL')
+    parser.add_argument('-s', '--study-id', type=str, help='Study ID', required=True)
+    parser.add_argument('-a', '--analysis-id', type=str, help='SONG analysis ID', required=True)
+    parser.add_argument('-d', '--data-files', type=str, nargs='+', help='Data files to be uploaded', required=True)
     args = parser.parse_args()
 
-    if not os.path.isfile(args.input_file):
-        sys.exit('Error: specified input file %s does not exist or is not accessible!' % args.input_file)
+    for f in args.data_files:
+        if not os.path.isfile(f):
+            sys.exit(f"Error: specified upload file '{f}' does not exist or is not accessible!")
 
-    if not os.path.isdir(args.output_dir):
-        sys.exit('Error: specified output dir %s does not exist or is not accessible!' % args.output_dir)
+    access_token = os.environ.get('ACCESS_TOKEN')
+    if not access_token:
+        sys.exit('Please provide access token as environment variable: ACCESS_TOKEN')
 
-    subprocess.run(f"cp {args.input_file} {args.output_dir}/", shell=True, check=True)
+    upload_data(args.song_url, args.score_url, args.study_id, args.analysis_id, access_token, args.data_files)
 
 
 if __name__ == "__main__":
     main()
-
