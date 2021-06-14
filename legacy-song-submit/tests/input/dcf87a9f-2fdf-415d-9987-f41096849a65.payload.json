@@ -1,0 +1,55 @@
+{
+  "analysisType": "variantCall",
+  "info": {},
+  "analysisId": "dcf87a9f-2fdf-415d-9987-f41096849a65",
+  "study": "PACA-CA",
+  "sample": [
+    {
+      "info": {},
+      "sampleSubmitterId": "PCSI_0572_Pa_P_526",
+      "sampleType": "DNA",
+      "specimen": {
+        "info": {},
+        "specimenSubmitterId": "PCSI_0572_Pa_P_526",
+        "specimenClass": "Tumour",
+        "specimenType": "Primary tumour - other"
+      },
+      "donor": {
+        "donorSubmitterId": "PCSI_0572",
+        "donorGender": "female",
+        "info": {}
+      }
+    }
+  ],
+  "file": [
+    {
+      "info": {},
+      "fileName": "dcf87a9f-2fdf-415d-9987-f41096849a3a.xml",
+      "fileSize": 32901,
+      "fileType": "XML",
+      "fileMd5sum": "882f579c3ce2390bcac3278e4947ca22",
+      "fileAccess": "controlled"
+    },
+    {
+      "info": {},
+      "fileName": "d333b55b-8bac-4a99-9d23-3cc0c25057bf.consensus.20161006.somatic.indel.vcf.gz.tbi",
+      "fileSize": 27848,
+      "fileType": "TBI",
+      "fileMd5sum": "e8fb993c3682361cc4b3abd258037575",
+      "fileAccess": "controlled"
+    },
+    {
+      "info": {},
+      "fileName": "d333b55b-8bac-4a99-9d23-3cc0c25057bf.consensus.20161006.somatic.indel.vcf.gz",
+      "fileSize": 62613,
+      "fileType": "VCF",
+      "fileMd5sum": "946dbe2dee7f64605e07bd0f44550218",
+      "fileAccess": "controlled"
+    }
+  ],
+  "experiment": {
+    "info": {},
+    "variantCallingTool": "PCAWG InDel callers",
+    "matchedNormalSampleSubmitterId": "PCSI_0572_Ly_R"
+  }
+}
