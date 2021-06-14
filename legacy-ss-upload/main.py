@@ -55,9 +55,15 @@ def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_f
     else:
         sys.exit(f'Unable to retieve SONG analysis object {analysis_id}')
 
+    profile = 'collab'
+    if 'azure' in score_url.lower():
+        profile = 'azure'
+    elif 'aws' in score_url.lower():
+        profile = 'aws'
+
     # score client upload
     upload_cmd = f'METADATA_URL={song_url} STORAGE_URL={score_url} ACCESSTOKEN={access_token}'
-    upload_cmd += ' score-client upload --manifest manifest.txt'
+    upload_cmd += f' score-client --profile {profile} upload --manifest manifest.txt'
 
     proc = subprocess.Popen(
                 upload_cmd,
