@@ -43,60 +43,19 @@ params.container_version = ""
 params.container = ""
 
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
-params.expected_output = ""
+params.api_token = ""
+params.song_url = "https://song.cancercollaboratory.org"
+params.score_url = "https://storage.cancercollaboratory.org"
+params.study_id = "PACA-CA"
+params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a3a"
+params.metadata_only = null
 
 include { legacySsDownload } from '../main'
 
 
-process file_smart_diff {
-  container "${params.container ?: container[params.container_registry ?: default_container_registry]}:${params.container_version ?: version}"
-
-  input:
-    path output_file
-    path expected_file
-
-  output:
-    stdout()
-
-  script:
-    """
-    # Note: this is only for demo purpose, please write your own 'diff' according to your own needs.
-    # in this example, we need to remove date field before comparison eg, <div id="header_filename">Tue 19 Jan 2021<br/>test_rg_3.bam</div>
-    # sed -e 's#"header_filename">.*<br/>test_rg_3.bam#"header_filename"><br/>test_rg_3.bam</div>#'
-
-    cat ${output_file} \
-      | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' > normalized_output
-
-    ([[ '${expected_file}' == *.gz ]] && gunzip -c ${expected_file} || cat ${expected_file}) \
-      | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' > normalized_expected
-
-    diff normalized_output normalized_expected \
-      && ( echo "Test PASSED" && exit 0 ) || ( echo "Test FAILED, output file mismatch." && exit 1 )
-    """
-}
-
-
-workflow checker {
-  take:
-    input_file
-    expected_output
-
-  main:
-    legacySsDownload(
-      input_file
-    )
-
-    file_smart_diff(
-      legacySsDownload.out.output_file,
-      expected_output
-    )
-}
-
-
 workflow {
-  checker(
-    file(params.input_file),
-    file(params.expected_output)
+  legacySsDownload(
+    params.study_id,
+    params.analysis_id
   )
 }
