@@ -38,12 +38,13 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
-params.cpus = 1
-params.mem = 1  // GB
+params.cpus = 2
+params.mem = 2  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
 
 // tool specific parmas go here, add / change as needed
+params.transport_mem = 1 // GB
 params.api_token = ""
 params.song_url = "https://song.azure-dev.overture.bio"
 params.score_url = "https://score.azure-dev.overture.bio"
@@ -73,6 +74,8 @@ process legacySsUpload {
 
     """
     export ACCESS_TOKEN=${accessToken}
+    export TRANSPORT_PARALLEL=${params.cpus}
+    export TRANSPORT_MEMORY=${params.transport_mem}
 
     main.py \
       -u ${params.song_url} \

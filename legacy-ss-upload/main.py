@@ -61,8 +61,14 @@ def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_f
     elif 'aws' in score_url.lower():
         profile = 'aws'
 
+    transport_parallel_env = f"TRANSPORT_PARALLEL={os.environ['TRANSPORT_PARALLEL']}" \
+                             if os.environ.get('TRANSPORT_PARALLEL') else ''
+
+    transport_mem_env = f"TRANSPORT_MEMORY={os.environ['TRANSPORT_MEMORY']}" \
+                        if os.environ.get('TRANSPORT_MEMORY') else ''
+
     # score client upload
-    upload_cmd = f'METADATA_URL={song_url} STORAGE_URL={score_url} ACCESSTOKEN={access_token}'
+    upload_cmd = f'{transport_parallel_env} {transport_mem_env} METADATA_URL={song_url} STORAGE_URL={score_url} ACCESSTOKEN={access_token}'
     upload_cmd += f' score-client --profile {profile} upload --manifest manifest.txt'
 
     proc = subprocess.Popen(
