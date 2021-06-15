@@ -69,8 +69,6 @@ def pop_sids(payload, study_id):
 
 
 def verify_sids(payload, sids):
-    print(payload)
-    print(sids)
     mismatches = []
     if sids['sampleId'] and sids['sampleId'] != payload['sample'][0].pop('sampleId'):
         mismatches.append(f"'sampleId' mismatch, original: {sids['sampleId']}, new: {payload['sample'][0].pop('sampleId')}")
