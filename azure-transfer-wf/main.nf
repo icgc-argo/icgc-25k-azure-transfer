@@ -99,9 +99,7 @@ workflow AzureTransferWf {
 
     if (params.cleanup) {
       cleanup(
-        Download.out.payload_json.concat(
-          Download.out.data_file, Submit.out, Upload.out
-        ).collect(),
+        Download.out.data_file.concat(Download.out.payload_json).collect(),
         Upload.out.analysis_id
       )
     }
