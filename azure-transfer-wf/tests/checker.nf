@@ -35,56 +35,34 @@ params.container_registry = ""
 params.container_version = ""
 
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
-params.expected_output = ""
-params.cleanup = false
+params.cleanup = true
+
+params.study_id = "TEST-PR"
+params.analysis_id = "9940db0f-c100-496a-80db-0fc100d96ac1"
+
+params.api_token = ""
+params.download_api_token = ""
+params.upload_api_token = ""
+
+params.song_cpus = 1
+params.song_mem = 1  // GB
+params.score_cpus = 1
+params.score_mem = 1  // GB
+params.score_transport_mem = 1  // GB
+
+params.download_song_url = "https://song.cancercollaboratory.org"
+params.download_score_url = "https://storage.cancercollaboratory.org"
+
+params.upload_song_url = "https://song.azure-dev.overture.bio"
+params.upload_score_url = "https://score.azure-dev.overture.bio"
+
 
 include { AzureTransferWf } from '../main'
-// include section starts
-// include section ends
-
-
-process file_smart_diff {
-  input:
-    path output_file
-    path expected_file
-
-  output:
-    stdout()
-
-  script:
-    """
-    # Note: this is only for demo purpose, please write your own 'diff' according to your own needs.
-    # remove date field before comparison eg, <div id="header_filename">Tue 19 Jan 2021<br/>test_rg_3.bam</div>
-    # sed -e 's#"header_filename">.*<br/>test_rg_3.bam#"header_filename"><br/>test_rg_3.bam</div>#'
-
-    diff <( cat ${output_file} | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' ) \
-         <( ([[ '${expected_file}' == *.gz ]] && gunzip -c ${expected_file} || cat ${expected_file}) | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' ) \
-    && ( echo "Test PASSED" && exit 0 ) || ( echo "Test FAILED, output file mismatch." && exit 1 )
-    """
-}
-
-
-workflow checker {
-  take:
-    input_file
-    expected_output
-
-  main:
-    AzureTransferWf(
-      input_file
-    )
-
-    file_smart_diff(
-      AzureTransferWf.out.output_file,
-      expected_output
-    )
-}
 
 
 workflow {
-  checker(
-    file(params.input_file),
-    file(params.expected_output)
+  AzureTransferWf(
+    params.study_id,
+    params.analysis_id
   )
 }
