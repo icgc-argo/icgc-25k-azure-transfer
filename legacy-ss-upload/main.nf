@@ -24,7 +24,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.1.0'  // package version
+version = '0.2.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-upload'
@@ -64,6 +64,9 @@ process legacySsUpload {
     val analysis_id
     path data_files
 
+  output:
+    stdout emit: analysis_id
+
   script:
     // add and initialize variables here as needed
     accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
@@ -78,6 +81,7 @@ process legacySsUpload {
       -a ${analysis_id} \
       -d ${data_files}
 
+    echo -n ${analysis_id}
     """
 }
 
