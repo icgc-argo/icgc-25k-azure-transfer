@@ -70,17 +70,17 @@ def pop_sids(payload, study_id):
 
 def verify_sids(payload, sids):
     mismatches = []
-    if sids['sampleId'] and sids['sampleId'] != payload['sample'][0].pop('sampleId'):
-        mismatches.append(f"'sampleId' mismatch, original: {sids['sampleId']}, new: {payload['sample'][0].pop('sampleId')}")
+    if sids['sampleId'] and sids['sampleId'] != payload['sample'][0]['sampleId']:
+        mismatches.append(f"'sampleId' mismatch, original: {sids['sampleId']}, new: {payload['sample'][0]['sampleId']}")
 
-    if sids['specimenId'] and sids['specimenId'] != payload['sample'][0].pop('specimenId'):
-        mismatches.append(f"'specimenId' mismatch, original: {sids['specimenId']}, new: {payload['sample'][0].pop('specimenId')}")
+    if sids['specimenId'] and sids['specimenId'] != payload['sample'][0]['specimenId']:
+        mismatches.append(f"'specimenId' mismatch, original: {sids['specimenId']}, new: {payload['sample'][0]['specimenId']}")
 
-    if sids['donorId'] and sids['donorId'] != payload['sample'][0]['donor'].pop('donorId'):
-        mismatches.append(f"'donorId' mismatch, original: {sids['donorId']}, new: {payload['sample'][0]['donor'].pop('donorId')}")
+    if sids['donorId'] and sids['donorId'] != payload['sample'][0]['donor']['donorId']:
+        mismatches.append(f"'donorId' mismatch, original: {sids['donorId']}, new: {payload['sample'][0]['donor']['donorId']}")
 
-    if sids['studyId'] and sids['studyId'] != payload['sample'][0]['donor'].pop('studyId'):
-        mismatches.append(f"'studyId' mismatch, original: {sids['studyId']}, new: {payload['sample'][0]['donor'].pop('studyId')}")
+    if sids['studyId'] and sids['studyId'] != payload['sample'][0]['donor']['studyId']:
+        mismatches.append(f"'studyId' mismatch, original: {sids['studyId']}, new: {payload['sample'][0]['donor']['studyId']}")
 
     for f in payload['file']:
         if sids['objectIds'].get(f['fileName']) and sids['objectIds'][f['fileName']] != f['objectId']:
