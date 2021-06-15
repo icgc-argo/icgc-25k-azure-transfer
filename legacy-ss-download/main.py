@@ -62,7 +62,13 @@ def download_data(song_url, score_url, study_id, analysis_id, access_token, outp
     elif 'aws' in score_url.lower():
         profile = 'aws'
 
-    download_cmd = f'METADATA_URL={song_url} STORAGE_URL={score_url} ACCESSTOKEN={access_token}'
+    transport_parallel_env = f"TRANSPORT_PARALLEL={os.environ['TRANSPORT_PARALLEL']}" \
+                             if os.environ.get('TRANSPORT_PARALLEL') else ''
+
+    transport_mem_env = f"TRANSPORT_MEMORY={os.environ['TRANSPORT_MEMORY']}" \
+                        if os.environ.get('TRANSPORT_MEMORY') else ''
+
+    download_cmd = f'{transport_parallel_env} {transport_mem_env} METADATA_URL={song_url} STORAGE_URL={score_url} ACCESSTOKEN={access_token}'
     download_cmd += f' score-client --profile {profile} download --study-id {study_id} --analysis-id {analysis_id} --output-dir {output_dir}/data'
 
     proc = subprocess.Popen(

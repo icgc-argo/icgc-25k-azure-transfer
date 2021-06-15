@@ -38,8 +38,9 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
-params.cpus = 1
-params.mem = 1  // GB
+params.cpus = 2
+params.mem = 2  // GB
+params.transport_mem = 1 // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
 
@@ -75,6 +76,8 @@ process legacySsDownload {
 
     """
     export ACCESS_TOKEN=${accessToken}
+    export TRANSPORT_PARALLEL=${params.cpus}
+    export TRANSPORT_MEMORY=${params.transport_mem}
 
     mkdir -p output_dir
 

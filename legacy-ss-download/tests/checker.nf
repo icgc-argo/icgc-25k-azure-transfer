@@ -42,7 +42,12 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
+params.cpus = 2
+params.mem = 2  // GB
+params.publish_dir = ""  // set to empty string will disable publishDir
+
 // tool specific parmas go here, add / change as needed
+params.transport_mem = 1 // GB
 params.api_token = ""
 params.song_url = "https://song.cancercollaboratory.org"
 params.score_url = "https://storage.cancercollaboratory.org"
