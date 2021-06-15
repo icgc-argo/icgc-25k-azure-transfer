@@ -3,5 +3,6 @@
     "analysis_id": "6d0453a9-80b6-48e7-88cc-3b167c256509",
     "cleanup": true,
     "cpus": 2,
-    "mem": 1
+    "mem": 2,
+    "score_transport_mem": 1
 }

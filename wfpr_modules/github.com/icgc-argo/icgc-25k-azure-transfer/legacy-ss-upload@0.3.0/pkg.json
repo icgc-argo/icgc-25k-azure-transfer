@@ -1,15 +1,14 @@
 {
-    "name": "legacy-ss-download",
-    "version": "0.1.0",
-    "description": "Legacy SONG/SCORE download",
+    "name": "legacy-ss-upload",
+    "version": "0.3.0",
+    "description": "Legacy SONG/SCORE upload",
     "main": "main.nf",
     "deprecated": false,
     "keywords": [
         "bioinformatics",
         "metadata",
         "data",
-        "song",
-        "score"
+        "upload"
     ],
     "repository": {
         "type": "git",

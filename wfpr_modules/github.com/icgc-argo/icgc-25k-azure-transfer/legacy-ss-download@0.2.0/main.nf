@@ -24,7 +24,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.1.0'  // package version
+version = '0.2.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-download'
@@ -38,8 +38,9 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
-params.cpus = 1
-params.mem = 1  // GB
+params.cpus = 2
+params.mem = 2  // GB
+params.transport_mem = 1 // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
 
@@ -75,6 +76,8 @@ process legacySsDownload {
 
     """
     export ACCESS_TOKEN=${accessToken}
+    export TRANSPORT_PARALLEL=${params.cpus}
+    export TRANSPORT_MEMORY=${params.transport_mem}
 
     mkdir -p output_dir
 

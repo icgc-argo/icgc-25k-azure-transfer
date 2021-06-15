@@ -57,20 +57,22 @@ download_params = [
     *:params,
     'song_url': params.download_song_url,
     'score_url': params.download_score_url,
-    'api_token': params.download_api_token ?: params.api_token
+    'api_token': params.download_api_token ?: params.api_token,
+    'transport_mem': params.score_transport_mem
 ]
 
 upload_params = [
     *:params,
     'song_url': params.upload_song_url,
     'score_url': params.upload_score_url,
-    'api_token': params.upload_api_token ?: params.api_token
+    'api_token': params.upload_api_token ?: params.api_token,
+    'transport_mem': params.score_transport_mem
 ]
 
 
-include { legacySsDownload as Download } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.1.0/main.nf' params(download_params)
+include { legacySsDownload as Download } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.2.0/main.nf' params(download_params)
 include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.3.0/main.nf' params(upload_params)
-include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.2.0/main.nf' params(upload_params)
+include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.3.0/main.nf' params(upload_params)
 include { cleanupWorkdir as cleanup } from './wfpr_modules/github.com/icgc-argo/data-processing-utility-tools/cleanup-workdir@1.0.0/main.nf'
 
 
