@@ -170,7 +170,7 @@ def main():
 
     analysis_id = submit_payload(args.song_url, args.study_id, args.payload, access_token, args.ignore_sid_mismatch)
     if analysis_id:
-        print(analysis_id)
+        print(analysis_id, end='')
 
 
 if __name__ == "__main__":
