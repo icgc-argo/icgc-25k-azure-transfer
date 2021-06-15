@@ -1,6 +1,6 @@
 {
     "name": "legacy-ss-upload",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "Legacy SONG/SCORE upload",
     "main": "main.nf",
     "deprecated": false,

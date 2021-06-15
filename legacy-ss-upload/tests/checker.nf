@@ -29,7 +29,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.2.0'
+version = '0.3.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-upload'
@@ -42,7 +42,12 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
+params.cpus = 2
+params.mem = 2  // GB
+params.publish_dir = ""  // set to empty string will disable publishDir
+
 // tool specific parmas go here, add / change as needed
+params.transport_mem = 1 // GB
 params.api_token = ""
 params.song_url = "https://song.azure-dev.overture.bio"
 params.score_url = "https://score.azure-dev.overture.bio"
