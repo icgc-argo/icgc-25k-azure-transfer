@@ -24,7 +24,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.1.0'  // package version
+version = '0.2.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-song-submit'
@@ -48,6 +48,7 @@ params.api_token = ""
 params.song_url = "https://song.azure-dev.overture.bio"
 params.study_id = "PACA-CA"
 params.payload_json = "NO_FILE"
+params.ignore_sid_mismatch = false
 
 
 process legacySongSubmit {
@@ -58,7 +59,6 @@ process legacySongSubmit {
   memory "${params.mem} GB"
 
   input:  // input, make update as needed
-    val song_url
     val study_id
     path payload_json
 
@@ -68,14 +68,15 @@ process legacySongSubmit {
   script:
     // add and initialize variables here as needed
     accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
+    arg_ignore_mism = params.ignore_sid_mismatch ? '-i': ''
 
     """
     export ACCESS_TOKEN=${accessToken}
 
     main.py \
-      -u ${song_url} \
+      -u ${params.song_url} \
       -s ${study_id} \
-      -p ${payload_json} \
+      -p ${payload_json} ${arg_ignore_mism}
 
     """
 }
@@ -85,7 +86,6 @@ process legacySongSubmit {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   legacySongSubmit(
-    params.song_url,
     params.study_id,
     file(params.payload_json)
   )
