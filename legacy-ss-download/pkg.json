@@ -1,6 +1,6 @@
 {
     "name": "legacy-ss-download",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Legacy SONG/SCORE download",
     "main": "main.nf",
     "deprecated": false,
