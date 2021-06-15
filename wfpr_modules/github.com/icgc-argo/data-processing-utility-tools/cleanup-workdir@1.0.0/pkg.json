@@ -1,17 +1,17 @@
 {
-    "name": "legacy-song-submit",
-    "version": "0.2.0",
-    "description": "Legacy SONG metadata submit",
+    "name": "cleanup-workdir",
+    "version": "1.0.0",
+    "description": "Process to cleanup workdir intermediate files",
     "main": "main.nf",
     "deprecated": false,
     "keywords": [
-        "bioinformatics",
-        "metadata",
-        "song"
+        "workflow",
+        "utility",
+        "temp file"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/icgc-argo/icgc-25k-azure-transfer.git"
+        "url": "https://github.com/icgc-argo/data-processing-utility-tools.git"
     },
     "container": {
         "registries": [
@@ -32,6 +32,6 @@
         }
     ],
     "license": "GNU Affero General Public License v3",
-    "bugReport": "https://github.com/icgc-argo/icgc-25k-azure-transfer/issues",
-    "homepage": "https://github.com/icgc-argo/icgc-25k-azure-transfer#readme"
+    "bugReport": "https://github.com/icgc-argo/data-processing-utility-tools/issues",
+    "homepage": "https://github.com/icgc-argo/data-processing-utility-tools#readme"
 }

@@ -50,6 +50,8 @@ params.score_cpus = 1
 params.score_mem = 1  // GB
 params.score_transport_mem = 1  // GB
 
+params.ignore_sid_mismatch = false
+
 params.download_song_url = "https://song.cancercollaboratory.org"
 params.download_score_url = "https://storage.cancercollaboratory.org"
 

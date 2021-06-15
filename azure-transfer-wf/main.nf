@@ -44,6 +44,8 @@ params.score_cpus = 1
 params.score_mem = 1  // GB
 params.score_transport_mem = 1  // GB
 
+params.ignore_sid_mismatch = false
+
 params.download_song_url = "https://song.cancercollaboratory.org"
 params.download_score_url = "https://storage.cancercollaboratory.org"
 
@@ -67,8 +69,9 @@ upload_params = [
 
 
 include { legacySsDownload as Download } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.1.0/main.nf' params(download_params)
-include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.2.0/main.nf' params(upload_params)
-include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.1.0/main.nf' params(upload_params)
+include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.3.0/main.nf' params(upload_params)
+include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.2.0/main.nf' params(upload_params)
+include { cleanupWorkdir as cleanup } from './wfpr_modules/github.com/icgc-argo/data-processing-utility-tools/cleanup-workdir@1.0.0/main.nf'
 
 
 // please update workflow code as needed
@@ -93,6 +96,15 @@ workflow AzureTransferWf {
       Submit.out,
       Download.out.data_file.collect()
     )
+
+    if (params.cleanup) {
+      cleanup(
+        Download.out.payload_json.concat(
+          Download.out.data_file, Submit.out, Upload.out
+        ).collect(),
+        Upload.out.analysis_id
+      )
+    }
 }
 
 
