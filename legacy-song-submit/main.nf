@@ -48,7 +48,7 @@ params.api_token = ""
 params.song_url = "https://song.azure-dev.overture.bio"
 params.study_id = "PACA-CA"
 params.payload_json = "NO_FILE"
-params.ignore_id_mismatch = false
+params.ignore_sid_mismatch = false
 
 
 process legacySongSubmit {
@@ -68,7 +68,7 @@ process legacySongSubmit {
   script:
     // add and initialize variables here as needed
     accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
-    arg_ignore_mism = params.ignore_id_mismatch ? '-i': ''
+    arg_ignore_mism = params.ignore_sid_mismatch ? '-i': ''
 
     """
     export ACCESS_TOKEN=${accessToken}

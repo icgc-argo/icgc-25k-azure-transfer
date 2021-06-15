@@ -47,7 +47,7 @@ params.api_token = ""
 params.song_url = "https://song.azure-dev.overture.bio"
 params.study_id = "PACA-CA"
 params.payload_json = "NO_FILE"
-params.ignore_id_mismatch = false
+params.ignore_sid_mismatch = false
 
 
 include { legacySongSubmit } from '../main'
