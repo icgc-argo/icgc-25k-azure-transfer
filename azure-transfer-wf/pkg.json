@@ -1,0 +1,32 @@
+{
+    "name": "azure-transfer-wf",
+    "version": "0.1.0",
+    "description": " ICGC 25K Azure data transfer workflow",
+    "main": "main.nf",
+    "deprecated": false,
+    "keywords": [
+        "data",
+        "transfer",
+        "azure",
+        "icgc"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/icgc-argo/icgc-25k-azure-transfer.git"
+    },
+    "dependencies": [
+        "github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.2.0",
+        "github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.3.0",
+        "github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.3.0",
+        "github.com/icgc-argo/data-processing-utility-tools/cleanup-workdir@1.0.0"
+    ],
+    "devDependencies": [],
+    "contributors": [
+        {
+            "name": "Junjun Zhang"
+        }
+    ],
+    "license": "GNU Affero General Public License v3",
+    "bugReport": "https://github.com/icgc-argo/icgc-25k-azure-transfer/issues",
+    "homepage": "https://github.com/icgc-argo/icgc-25k-azure-transfer#readme"
+}
