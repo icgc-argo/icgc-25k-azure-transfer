@@ -38,17 +38,20 @@ params.container_version = ""
 params.cleanup = true
 
 params.study_id = "TEST-PR"
-params.analysis_id = "9940db0f-c100-496a-80db-0fc100d96ac1"
+params.analysis_id = "9940db0f-c100-496a-80db-0fc100d96999"
 
 params.api_token = ""
 params.download_api_token = ""
 params.upload_api_token = ""
 
-params.song_cpus = 1
-params.song_mem = 1  // GB
-params.score_cpus = 1
-params.score_mem = 1  // GB
-params.score_transport_mem = 1  // GB
+params.transport_mem = 1
+
+params.download_cpus = null
+params.download_mem = null
+params.download_transport_mem = null
+params.upload_cpus = null
+params.upload_mem = null
+params.upload_transport_mem = null
 
 params.ignore_sid_mismatch = false
 

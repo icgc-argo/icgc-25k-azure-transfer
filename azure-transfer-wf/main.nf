@@ -32,17 +32,20 @@ params.publish_dir = ""  // set to empty string will disable publishDir
 params.cleanup = true
 
 params.study_id = "TEST-PR"
-params.analysis_id = "9940db0f-c100-496a-80db-0fc100d96ac1"
+params.analysis_id = "9940db0f-c100-496a-80db-0fc100d96999"
 
 params.api_token = ""
 params.download_api_token = ""
 params.upload_api_token = ""
 
-params.song_cpus = 1
-params.song_mem = 1  // GB
-params.score_cpus = 1
-params.score_mem = 1  // GB
-params.score_transport_mem = 1  // GB
+params.transport_mem = 1
+
+params.download_cpus = null
+params.download_mem = null
+params.download_transport_mem = null
+params.upload_cpus = null
+params.upload_mem = null
+params.upload_transport_mem = null
 
 params.ignore_sid_mismatch = false
 
@@ -55,23 +58,33 @@ params.upload_score_url = "https://score.azure-dev.overture.bio"
 
 download_params = [
     *:params,
+    'cpus': params.download_cpus ?: params.cpus,
+    'mem': params.download_mem ?: params.mem,
     'song_url': params.download_song_url,
     'score_url': params.download_score_url,
     'api_token': params.download_api_token ?: params.api_token,
-    'transport_mem': params.score_transport_mem
+    'transport_mem': params.download_transport_mem ?: params.transport_mem
+]
+
+submit_params = [
+    *:params,
+    'song_url': params.upload_song_url,
+    'api_token': params.upload_api_token ?: params.api_token
 ]
 
 upload_params = [
     *:params,
+    'cpus': params.upload_cpus ?: params.cpus,
+    'mem': params.upload_mem ?: params.mem,
     'song_url': params.upload_song_url,
     'score_url': params.upload_score_url,
     'api_token': params.upload_api_token ?: params.api_token,
-    'transport_mem': params.score_transport_mem
+    'transport_mem': params.upload_transport_mem ?: params.transport_mem
 ]
 
 
 include { legacySsDownload as Download } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.2.0/main.nf' params(download_params)
-include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.3.0/main.nf' params(upload_params)
+include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.3.0/main.nf' params(submit_params)
 include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.3.0/main.nf' params(upload_params)
 include { cleanupWorkdir as cleanup } from './wfpr_modules/github.com/icgc-argo/data-processing-utility-tools/cleanup-workdir@1.0.0/main.nf'
 
