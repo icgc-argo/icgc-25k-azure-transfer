@@ -64,16 +64,14 @@ process legacySsUpload {
     val study_id
     val analysis_id
     path data_files
+    env ACCESS_TOKEN
 
   output:
     stdout emit: analysis_id
 
   script:
     // add and initialize variables here as needed
-    accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
-
     """
-    export ACCESS_TOKEN=${accessToken}
     export TRANSPORT_PARALLEL=${params.cpus}
     export TRANSPORT_MEMORY=${params.transport_mem}
 
@@ -97,6 +95,7 @@ workflow {
   legacySsUpload(
     params.study_id,
     params.analysis_id,
-    data_files.collect()
+    data_files.collect(),
+    params.api_token
   )
 }

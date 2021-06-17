@@ -65,6 +65,7 @@ workflow {
   legacySsUpload(
     params.study_id,
     params.analysis_id,
-    data_files.collect()
+    data_files.collect(),
+    params.api_token
   )
 }
