@@ -61,6 +61,7 @@ include { legacySsDownload } from '../main'
 workflow {
   legacySsDownload(
     params.study_id,
-    params.analysis_id
+    params.analysis_id,
+    params.api_token
   )
 }
