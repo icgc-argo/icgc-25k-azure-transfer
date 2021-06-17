@@ -94,22 +94,26 @@ workflow AzureTransferWf {
   take:
     study_id
     analysis_id
+    api_token
 
   main:
     Download(
       study_id,
-      analysis_id
+      analysis_id,
+      api_token
     )
 
     Submit(
       study_id,
-      Download.out.payload_json
+      Download.out.payload_json,
+      api_token
     )
 
     Upload(
       study_id,
       Submit.out,
-      Download.out.data_file.collect()
+      Download.out.data_file.collect(),
+      api_token
     )
 
     if (params.cleanup) {
@@ -126,6 +130,7 @@ workflow AzureTransferWf {
 workflow {
   AzureTransferWf(
     params.study_id,
-    params.analysis_id
+    params.analysis_id,
+    params.api_token
   )
 }

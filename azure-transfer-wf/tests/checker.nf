@@ -68,6 +68,7 @@ include { AzureTransferWf } from '../main'
 workflow {
   AzureTransferWf(
     params.study_id,
-    params.analysis_id
+    params.analysis_id,
+    params.api_token
   )
 }
