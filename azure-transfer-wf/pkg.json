@@ -1,6 +1,6 @@
 {
     "name": "azure-transfer-wf",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": " ICGC 25K Azure data transfer workflow",
     "main": "main.nf",
     "deprecated": false,
