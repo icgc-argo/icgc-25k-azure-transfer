@@ -55,6 +55,7 @@ include { legacySongSubmit } from '../main'
 workflow {
   legacySongSubmit(
     params.study_id,
-    file(params.payload_json)
+    file(params.payload_json),
+    params.api_token
   )
 }
