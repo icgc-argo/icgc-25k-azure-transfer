@@ -24,7 +24,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.2.0'
+version = '0.3.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-download'
@@ -63,6 +63,7 @@ process legacySsDownload {
   input:  // input, make update as needed
     val study_id
     val analysis_id
+    env ACCESS_TOKEN
 
   output:  // output, make update as needed
     path "output_dir/*.payload.json", emit: payload_json
@@ -70,12 +71,10 @@ process legacySsDownload {
 
   script:
     // add and initialize variables here as needed
-    accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
     arg_score_url = params.score_url ? "-r ${params.score_url}" : ""
     arg_metadata_only = params.metadata_only ? "-m" : ""
 
     """
-    export ACCESS_TOKEN=${accessToken}
     export TRANSPORT_PARALLEL=${params.cpus}
     export TRANSPORT_MEMORY=${params.transport_mem}
 
@@ -96,6 +95,7 @@ process legacySsDownload {
 workflow {
   legacySsDownload(
     params.study_id,
-    params.analysis_id
+    params.analysis_id,
+    params.api_token
   )
 }
