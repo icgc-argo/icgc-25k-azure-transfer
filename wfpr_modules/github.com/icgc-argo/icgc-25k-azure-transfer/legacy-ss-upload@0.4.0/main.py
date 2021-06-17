@@ -92,7 +92,7 @@ def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_f
     if res.status_code != 200:
         sys.exit(f'Data files uploaded, but unable to publish SONG analysis. More info: {res.text}')
     else:
-        print('Data files uploaded, SONG analysis published.')
+        print('Data files uploaded, SONG analysis published.', file=sys.stderr)
 
 
 def main():
