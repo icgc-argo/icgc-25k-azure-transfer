@@ -67,7 +67,8 @@ def download_data(song_url, score_url, study_id, analysis_id, access_token, outp
 
 
 def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_files=list()):
-    file_names = [os.path.basename(f) for f in data_files]
+    for f in data_files:
+        file_name_to_path[os.path.basename(f)] = f
 
     # prepare manifest file
     url = f'{song_url}/studies/{study_id}/analysis/{analysis_id}'
@@ -83,10 +84,10 @@ def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_f
         with open('manifest.txt', 'w') as m:
             m.write(f"{analysis_id}\t\t\n")
             for f in payload_dict['file']:
-                if f['fileName'] not in file_names:
+                if f['fileName'] not in file_name_to_path:
                     sys.exit(f"File '{f['fileName']}' exists in SONG payload, but not provided for upload.")
 
-                file_path = os.path.join(cwd, f['fileName'])
+                file_path = file_name_to_path[f['fileName']]
                 m.write(f"{f['objectId']}\t{file_path}\t{f['fileMd5sum']}\n")
 
     else:
