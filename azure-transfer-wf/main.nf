@@ -28,6 +28,9 @@ params.cpus = 1
 params.mem = 1  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
+params.max_retries = 3  // set to 0 will disable retry
+params.first_retry_wait_time = 60  // in seconds
+
 // tool specific parmas go here, add / change as needed
 params.cleanup = true
 
@@ -38,6 +41,7 @@ params.api_token = ""
 params.download_api_token = ""
 params.upload_api_token = ""
 
+params.local_dir = "NO_DIR"  // optional, when specified download and upload will be performed in a single step to make use of local directory instead of NFS
 params.transport_mem = 1
 
 params.download_cpus = null
@@ -82,9 +86,20 @@ upload_params = [
     'transport_mem': params.upload_transport_mem ?: params.transport_mem
 ]
 
+transfer_params = [
+    *:params,
+    'cpus': params.download_cpus ?: params.cpus,
+    'mem': params.download_mem ?: params.mem,
+    'download_song_url': params.download_song_url,
+    'download_score_url': params.download_score_url,
+    'upload_song_url': params.upload_song_url,
+    'upload_score_url': params.upload_score_url,
+]
+
 
 include { legacySsDownload as DownloadMeta } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.3.0/main.nf' params([*:download_params, 'metadata_only': true])
 include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.4.0/main.nf' params(submit_params)
+include { scoreDataTransfer as Transfer } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/score-data-transfer@0.1.0/main.nf' params(transfer_params)
 include { legacySsDownload as DownloadData } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.3.0/main.nf' params(download_params)
 include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.4.0/main.nf' params(upload_params)
 include { cleanupWorkdir as cleanup } from './wfpr_modules/github.com/icgc-argo/data-processing-utility-tools/cleanup-workdir@1.0.0/main.nf'
@@ -110,20 +125,30 @@ workflow AzureTransferWf {
       api_token
     )
 
-    DownloadData(
-      study_id,
-      Submit.out,
-      api_token
-    )
+    if (params.local_dir == 'NO_DIR') {  // no local dir set
+      DownloadData(
+        study_id,
+        Submit.out,
+        api_token
+      )
 
-    Upload(
-      study_id,
-      Submit.out,
-      DownloadData.out.data_file.collect(),
-      api_token
-    )
+      Upload(
+        study_id,
+        Submit.out,
+        DownloadData.out.data_file.collect(),
+        api_token
+      )
+    } else {  // with local dir, perform download and upload together in one step
+      Transfer(
+        study_id,
+        Submit.out,
+        api_token
+      )
+    }
 
-    if (params.cleanup) {
+    // assume no cleanup is needed when local_dir is used, for
+    // example k8s emptyDir: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+    if (params.cleanup and params.local_dir == 'NO_DIR') {
       cleanup(
         DownloadData.out.data_file.concat(DownloadMeta.out.payload_json).collect(),
         Upload.out.analysis_id

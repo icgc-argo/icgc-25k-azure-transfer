@@ -34,6 +34,9 @@ params.container = ""
 params.container_registry = ""
 params.container_version = ""
 
+params.max_retries = 0  // set to 0 will disable retry
+params.first_retry_wait_time = 60  // in seconds
+
 // tool specific parmas go here, add / change as needed
 params.cleanup = true
 
