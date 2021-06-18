@@ -21,7 +21,7 @@
 */
 
 nextflow.enable.dsl = 2
-version = '0.2.0'
+version = '0.1.0'  // package version
 
 // universal params go here, change default value as needed
 params.cpus = 1
@@ -83,8 +83,9 @@ upload_params = [
 ]
 
 
-include { legacySsDownload as Download } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.3.0/main.nf' params(download_params)
+include { legacySsDownload as DownloadMeta } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.3.0/main.nf' params([*:download_params, 'metadata_only': true])
 include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.4.0/main.nf' params(submit_params)
+include { legacySsDownload as DownloadData } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.3.0/main.nf' params(download_params)
 include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.4.0/main.nf' params(upload_params)
 include { cleanupWorkdir as cleanup } from './wfpr_modules/github.com/icgc-argo/data-processing-utility-tools/cleanup-workdir@1.0.0/main.nf'
 
@@ -97,7 +98,7 @@ workflow AzureTransferWf {
     api_token
 
   main:
-    Download(
+    DownloadMeta(
       study_id,
       analysis_id,
       api_token
@@ -105,20 +106,26 @@ workflow AzureTransferWf {
 
     Submit(
       study_id,
-      Download.out.payload_json,
+      DownloadMeta.out.payload_json,
+      api_token
+    )
+
+    DownloadData(
+      study_id,
+      Submit.out,
       api_token
     )
 
     Upload(
       study_id,
       Submit.out,
-      Download.out.data_file.collect(),
+      DownloadData.out.data_file.collect(),
       api_token
     )
 
     if (params.cleanup) {
       cleanup(
-        Download.out.data_file.concat(Download.out.payload_json).collect(),
+        DownloadData.out.data_file.concat(DownloadMeta.out.payload_json).collect(),
         Upload.out.analysis_id
       )
     }
