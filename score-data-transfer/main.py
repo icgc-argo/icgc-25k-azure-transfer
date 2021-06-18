@@ -67,6 +67,7 @@ def download_data(song_url, score_url, study_id, analysis_id, access_token, outp
 
 
 def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_files=list()):
+    file_name_to_path = dict()
     for f in data_files:
         file_name_to_path[os.path.basename(f)] = f
 
