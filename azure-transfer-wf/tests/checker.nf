@@ -26,7 +26,7 @@
 */
 
 nextflow.enable.dsl = 2
-version = '0.1.0'  // package version
+version = '0.2.0'
 
 // universal params
 params.publish_dir = ""
@@ -68,6 +68,7 @@ include { AzureTransferWf } from '../main'
 workflow {
   AzureTransferWf(
     params.study_id,
-    params.analysis_id
+    params.analysis_id,
+    params.api_token
   )
 }

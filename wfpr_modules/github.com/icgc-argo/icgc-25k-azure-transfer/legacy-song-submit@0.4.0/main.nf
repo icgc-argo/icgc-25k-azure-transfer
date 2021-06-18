@@ -24,7 +24,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.3.0'
+version = '0.4.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-song-submit'
@@ -61,18 +61,16 @@ process legacySongSubmit {
   input:  // input, make update as needed
     val study_id
     path payload_json
+    env ACCESS_TOKEN
 
   output:  // output, make update as needed
     stdout()
 
   script:
     // add and initialize variables here as needed
-    accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
     arg_ignore_mism = params.ignore_sid_mismatch ? '-i': ''
 
     """
-    export ACCESS_TOKEN=${accessToken}
-
     main.py \
       -u ${params.song_url} \
       -s ${study_id} \
@@ -87,6 +85,7 @@ process legacySongSubmit {
 workflow {
   legacySongSubmit(
     params.study_id,
-    file(params.payload_json)
+    file(params.payload_json),
+    params.api_token
   )
 }
