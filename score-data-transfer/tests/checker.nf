@@ -42,61 +42,29 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
+params.cpus = 2
+params.mem = 2  // GB
+params.publish_dir = ""  // set to empty string will disable publishDir
+
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
-params.expected_output = ""
+params.api_token = ""
+params.study_id = "PACA-CA"
+params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a60"
+
+params.local_dir = "NO_DIR"  // optional param to specify data path
+params.download_song_url = "https://song.cancercollaboratory.org"
+params.download_score_url = "https://storage.cancercollaboratory.org"
+params.upload_song_url = "https://song.azure-dev.overture.bio"
+params.upload_score_url = "https://score.azure-dev.overture.bio"
+params.transport_mem = 1 // GB, roughly: params.mem / params.cpus
 
 include { scoreDataTransfer } from '../main'
 
 
-process file_smart_diff {
-  container "${params.container ?: container[params.container_registry ?: default_container_registry]}:${params.container_version ?: version}"
-
-  input:
-    path output_file
-    path expected_file
-
-  output:
-    stdout()
-
-  script:
-    """
-    # Note: this is only for demo purpose, please write your own 'diff' according to your own needs.
-    # in this example, we need to remove date field before comparison eg, <div id="header_filename">Tue 19 Jan 2021<br/>test_rg_3.bam</div>
-    # sed -e 's#"header_filename">.*<br/>test_rg_3.bam#"header_filename"><br/>test_rg_3.bam</div>#'
-
-    cat ${output_file} \
-      | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' > normalized_output
-
-    ([[ '${expected_file}' == *.gz ]] && gunzip -c ${expected_file} || cat ${expected_file}) \
-      | sed -e 's#"header_filename">.*<br/>#"header_filename"><br/>#' > normalized_expected
-
-    diff normalized_output normalized_expected \
-      && ( echo "Test PASSED" && exit 0 ) || ( echo "Test FAILED, output file mismatch." && exit 1 )
-    """
-}
-
-
-workflow checker {
-  take:
-    input_file
-    expected_output
-
-  main:
-    scoreDataTransfer(
-      input_file
-    )
-
-    file_smart_diff(
-      scoreDataTransfer.out.output_file,
-      expected_output
-    )
-}
-
-
 workflow {
-  checker(
-    file(params.input_file),
-    file(params.expected_output)
+  scoreDataTransfer(
+    params.study_id,
+    params.analysis_id,
+    params.api_token
   )
 }

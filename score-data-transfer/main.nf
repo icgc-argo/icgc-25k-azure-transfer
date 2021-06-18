@@ -38,14 +38,22 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
-params.cpus = 1
-params.mem = 1  // GB
+params.cpus = 2
+params.mem = 2  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
 
 // tool specific parmas go here, add / change as needed
-params.input_file = ""
-params.output_pattern = "*.html"  // output file name pattern
+params.api_token = ""
+params.study_id = "PACA-CA"
+params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a60"
+
+params.local_dir = "NO_DIR"  // optional param to specify data path
+params.download_song_url = "https://song.cancercollaboratory.org"
+params.download_score_url = "https://storage.cancercollaboratory.org"
+params.upload_song_url = "https://song.azure-dev.overture.bio"
+params.upload_score_url = "https://score.azure-dev.overture.bio"
+params.transport_mem = 1 // GB, roughly: params.mem / params.cpus
 
 
 process scoreDataTransfer {
@@ -56,21 +64,33 @@ process scoreDataTransfer {
   memory "${params.mem} GB"
 
   input:  // input, make update as needed
-    path input_file
+    val study_id
+    val analysis_id
+    env ACCESS_TOKEN
 
   output:  // output, make update as needed
-    path "output_dir/${params.output_pattern}", emit: output_file
+    stdout emit: analysis_id
 
   script:
     // add and initialize variables here as needed
+    data_dir = params.local_dir == "NO_DIR" ? "." : params.local_dir
 
     """
-    mkdir -p output_dir
+    export TRANSPORT_PARALLEL=${params.cpus}
+    export TRANSPORT_MEMORY=${params.transport_mem}
+
+    mkdir -p ${data_dir}/data  # make sure it exists
 
     main.py \
-      -i ${input_file} \
-      -o output_dir
+      -s ${study_id} \
+      -a ${analysis_id} \
+      -i ${params.download_song_url} \
+      -j ${params.download_score_url} \
+      -o ${params.upload_song_url} \
+      -p ${params.upload_score_url} \
+      -d ${data_dir}/data
 
+    echo -n ${analysis_id}
     """
 }
 
@@ -79,6 +99,8 @@ process scoreDataTransfer {
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
   scoreDataTransfer(
-    file(params.input_file)
+    params.study_id,
+    params.analysis_id,
+    params.api_token
   )
 }

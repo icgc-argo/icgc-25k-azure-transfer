@@ -1,0 +1,11 @@
+{
+  "study_id": "PACA-CA",
+  "analysis_id": "dcf87a9f-2fdf-415d-9987-f41096849a3a",
+  "download_song_url": "https://song.cancercollaboratory.org",
+  "download_score_url": "https://storage.cancercollaboratory.org",
+  "upload_song_url": "https://song.azure-dev.overture.bio",
+  "upload_score_url": "https://score.azure-dev.overture.bio",
+  "cpus": 2,
+  "mem": 4,
+  "transport_mem": 2
+}
