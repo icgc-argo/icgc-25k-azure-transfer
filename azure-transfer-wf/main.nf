@@ -99,7 +99,7 @@ transfer_params = [
 
 include { legacySsDownload as DownloadMeta } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.3.0/main.nf' params([*:download_params, 'metadata_only': true])
 include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.4.0/main.nf' params(submit_params)
-include { scoreDataTransfer as Transfer } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/score-data-transfer@0.1.0/main.nf' params(transfer_params)
+include { scoreDataTransfer as Transfer } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/score-data-transfer@0.2.0/main.nf' params(transfer_params)
 include { legacySsDownload as DownloadData } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.3.0/main.nf' params(download_params)
 include { legacySsUpload as Upload } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-upload@0.4.0/main.nf' params(upload_params)
 include { cleanupWorkdir as cleanup } from './wfpr_modules/github.com/icgc-argo/data-processing-utility-tools/cleanup-workdir@1.0.0/main.nf'
