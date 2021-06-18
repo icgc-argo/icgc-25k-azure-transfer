@@ -5,6 +5,7 @@
   "download_score_url": "https://storage.cancercollaboratory.org",
   "upload_song_url": "https://song.azure-dev.overture.bio",
   "upload_score_url": "https://score.azure-dev.overture.bio",
+  "max_retries": 0,
   "cpus": 2,
   "mem": 4,
   "transport_mem": 2

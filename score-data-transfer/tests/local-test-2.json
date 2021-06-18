@@ -1,6 +1,8 @@
 {
   "study_id": "PACA-CA",
   "analysis_id": "dcf87a9f-2fdf-415d-9987-f41096849a3a",
+  "max_retries": 3,
+  "first_retry_wait_time": 60,
   "cpus": 2,
   "mem": 4,
   "transport_mem": 2

@@ -42,6 +42,8 @@ params.cpus = 2
 params.mem = 2  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
+params.max_retries = 3  // set to 0 will disable retry
+params.first_retry_wait_time = 60  // in seconds
 
 // tool specific parmas go here, add / change as needed
 params.api_token = ""
@@ -62,6 +64,12 @@ process scoreDataTransfer {
 
   cpus params.cpus
   memory "${params.mem} GB"
+
+  maxRetries params.max_retries
+  errorStrategy {
+    sleep(Math.pow(2, task.attempt) * params.first_retry_wait_time * 1000 as long);  // backoff time increases exponentially before each retry
+    return (params.max_retries && task.exitStatus != 137) ? 'retry' : 'finish'  // assume intentional kill yields 137 exitcode
+  }
 
   input:  // input, make update as needed
     val study_id

@@ -46,6 +46,9 @@ params.cpus = 2
 params.mem = 2  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
+params.max_retries = 5  // set to 0 will disable retry
+params.first_retry_wait_time = 10  // in seconds
+
 // tool specific parmas go here, add / change as needed
 params.api_token = ""
 params.study_id = "PACA-CA"
