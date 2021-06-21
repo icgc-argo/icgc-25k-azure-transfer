@@ -97,6 +97,7 @@ transfer_params = [
 ]
 
 
+include { permissibleStudy } from './local_modules/permissible-study.nf'
 include { legacySsDownload as DownloadMeta } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-ss-download@0.4.0/main.nf' params([*:download_params, 'metadata_only': true])
 include { legacySongSubmit as Submit } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/legacy-song-submit@0.5.0/main.nf' params(submit_params)
 include { scoreDataTransfer as Transfer } from './wfpr_modules/github.com/icgc-argo/icgc-25k-azure-transfer/score-data-transfer@0.3.0/main.nf' params(transfer_params)
@@ -113,6 +114,8 @@ workflow AzureTransferWf {
     api_token
 
   main:
+    study_id = permissibleStudy(study_id)
+
     DownloadMeta(
       study_id,
       Channel.from(analysis_id),
