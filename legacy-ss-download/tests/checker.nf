@@ -29,7 +29,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.3.0'
+version = '0.4.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-download'
@@ -45,6 +45,9 @@ params.container = ""
 params.cpus = 2
 params.mem = 2  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
+
+params.max_retries = 3  // set to 0 will disable retry
+params.first_retry_wait_time = 5  // in seconds
 
 // tool specific parmas go here, add / change as needed
 params.transport_mem = 1 // GB
