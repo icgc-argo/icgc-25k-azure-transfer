@@ -20,72 +20,54 @@
     Junjun Zhang
 */
 
+/*
+ This is an auto-generated checker workflow to test the generated main template workflow, it's
+ meant to illustrate how testing works. Please update to suit your own needs.
+*/
+
 /********************************************************************/
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.4.0'
+version = '0.2.0'
 
 container = [
-    'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-song-submit'
+    'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.score-data-transfer'
 ]
 default_container_registry = 'ghcr.io'
 /********************************************************************/
 
-
-// universal params go here
+// universal params
 params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
-params.cpus = 1
-params.mem = 1  // GB
+params.cpus = 2
+params.mem = 2  // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
+params.max_retries = 5  // set to 0 will disable retry
+params.first_retry_wait_time = 10  // in seconds
 
 // tool specific parmas go here, add / change as needed
 params.api_token = ""
-params.song_url = "https://song.azure-dev.overture.bio"
 params.study_id = "PACA-CA"
-params.payload_json = "NO_FILE"
-params.ignore_sid_mismatch = false
+params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a60"
+
+params.local_dir = "NO_DIR"  // optional param to specify data path
+params.download_song_url = "https://song.cancercollaboratory.org"
+params.download_score_url = "https://storage.cancercollaboratory.org"
+params.upload_song_url = "https://song.azure-dev.overture.bio"
+params.upload_score_url = "https://score.azure-dev.overture.bio"
+params.transport_mem = 1 // GB, roughly: params.mem / params.cpus
+
+include { scoreDataTransfer } from '../main'
 
 
-process legacySongSubmit {
-  container "${params.container ?: container[params.container_registry ?: default_container_registry]}:${params.container_version ?: version}"
-  publishDir "${params.publish_dir}/${task.process.replaceAll(':', '_')}", mode: "copy", enabled: params.publish_dir
-
-  cpus params.cpus
-  memory "${params.mem} GB"
-
-  input:  // input, make update as needed
-    val study_id
-    path payload_json
-    env ACCESS_TOKEN
-
-  output:  // output, make update as needed
-    stdout()
-
-  script:
-    // add and initialize variables here as needed
-    arg_ignore_mism = params.ignore_sid_mismatch ? '-i': ''
-
-    """
-    main.py \
-      -u ${params.song_url} \
-      -s ${study_id} \
-      -p ${payload_json} ${arg_ignore_mism}
-
-    """
-}
-
-
-// this provides an entry point for this main script, so it can be run directly without clone the repo
-// using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
-  legacySongSubmit(
+  scoreDataTransfer(
     params.study_id,
-    file(params.payload_json),
+    params.analysis_id,
     params.api_token
   )
 }

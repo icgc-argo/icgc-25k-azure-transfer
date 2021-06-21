@@ -24,10 +24,10 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.2.0'
+version = '0.4.0'
 
 container = [
-    'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-download'
+    'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-upload'
 ]
 default_container_registry = 'ghcr.io'
 /********************************************************************/
@@ -40,20 +40,20 @@ params.container = ""
 
 params.cpus = 2
 params.mem = 2  // GB
-params.transport_mem = 1 // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
 
 // tool specific parmas go here, add / change as needed
+params.transport_mem = 1 // GB
 params.api_token = ""
-params.song_url = "https://song.cancercollaboratory.org"
-params.score_url = "https://storage.cancercollaboratory.org"
+params.song_url = "https://song.azure-dev.overture.bio"
+params.score_url = "https://score.azure-dev.overture.bio"
 params.study_id = "PACA-CA"
 params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a60"
-params.metadata_only = null
+params.data_files = []  // required
 
 
-process legacySsDownload {
+process legacySsUpload {
   container "${params.container ?: container[params.container_registry ?: default_container_registry]}:${params.container_version ?: version}"
   publishDir "${params.publish_dir}/${task.process.replaceAll(':', '_')}", mode: "copy", enabled: params.publish_dir
 
@@ -63,30 +63,26 @@ process legacySsDownload {
   input:  // input, make update as needed
     val study_id
     val analysis_id
+    path data_files
+    env ACCESS_TOKEN
 
-  output:  // output, make update as needed
-    path "output_dir/*.payload.json", emit: payload_json
-    path "output_dir/data/*", emit: data_file optional true
+  output:
+    stdout emit: analysis_id
 
   script:
     // add and initialize variables here as needed
-    accessToken = params.api_token ? params.api_token : "`cat /tmp/rdpc_secret/secret`"
-    arg_score_url = params.score_url ? "-r ${params.score_url}" : ""
-    arg_metadata_only = params.metadata_only ? "-m" : ""
-
     """
-    export ACCESS_TOKEN=${accessToken}
     export TRANSPORT_PARALLEL=${params.cpus}
     export TRANSPORT_MEMORY=${params.transport_mem}
 
-    mkdir -p output_dir
-
     main.py \
       -u ${params.song_url} \
+      -r ${params.score_url} \
       -s ${study_id} \
       -a ${analysis_id} \
-      -o output_dir ${arg_score_url} ${arg_metadata_only}
+      -d ${data_files}
 
+    echo -n ${analysis_id}
     """
 }
 
@@ -94,8 +90,12 @@ process legacySsDownload {
 // this provides an entry point for this main script, so it can be run directly without clone the repo
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
-  legacySsDownload(
+  data_files = Channel.fromPath(params.data_files)
+
+  legacySsUpload(
     params.study_id,
-    params.analysis_id
+    params.analysis_id,
+    data_files.collect(),
+    params.api_token
   )
 }
