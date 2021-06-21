@@ -21,7 +21,7 @@
 */
 
 nextflow.enable.dsl = 2
-version = '0.3.0'
+version = '0.4.0'
 
 // universal params go here, change default value as needed
 params.cpus = 1
