@@ -8,5 +8,6 @@
     ],
     "cpus": 2,
     "mem": 2,
-    "transport_mem": 1
+    "transport_mem": 1,
+    "max_retries": 2
 }
