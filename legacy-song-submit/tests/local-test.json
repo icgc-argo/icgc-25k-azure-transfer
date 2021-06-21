@@ -1,5 +1,6 @@
 {
     "api_token": "your_token",
     "study_id": "PACA-CA",
+    "max_retries": 2,
     "payload_json": "input/dcf87a9f-2fdf-415d-9987-f41096849a65.payload.json"
 }

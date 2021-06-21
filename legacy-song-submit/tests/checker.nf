@@ -42,6 +42,9 @@ params.container_registry = ""
 params.container_version = ""
 params.container = ""
 
+params.max_retries = 3  // set to 0 will disable retry
+params.first_retry_wait_time = 5  // in seconds
+
 // tool specific parmas go here, add / change as needed
 params.api_token = ""
 params.song_url = "https://song.azure-dev.overture.bio"
