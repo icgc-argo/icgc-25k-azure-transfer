@@ -1,8 +1,12 @@
 {
     "study_id": "PACA-CA",
-    "analysis_id": "33df42ff-f804-4378-82d9-fcad5f951786",
+    "analysis_id": [
+        "ea8a6dbe-ffa2-49f0-b5a3-4fc2ae92a864",
+        "af80e57e-f94c-42a6-aebb-8e714f9182aa",
+        "c24b7f7d-174b-482e-b23d-05ff4dca9dd0"
+    ],
     "max_retries": 2,
-    "first_retry_wait_time": 60,
+    "first_retry_wait_time": 2,
     "local_dir": "/tmp",
     "cpus": 1,
     "mem": 1,

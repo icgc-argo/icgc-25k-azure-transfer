@@ -27,7 +27,7 @@ nextflow.enable.dsl = 2
 version = '0.4.0'
 
 container = [
-    'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-upload'
+    'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.legacy-ss-download'
 ]
 default_container_registry = 'ghcr.io'
 /********************************************************************/
@@ -40,49 +40,64 @@ params.container = ""
 
 params.cpus = 2
 params.mem = 2  // GB
+params.transport_mem = 1 // GB
 params.publish_dir = ""  // set to empty string will disable publishDir
 
+params.max_retries = 3  // set to 0 will disable retry
+params.first_retry_wait_time = 60  // in seconds
 
 // tool specific parmas go here, add / change as needed
-params.transport_mem = 1 // GB
 params.api_token = ""
-params.song_url = "https://song.azure-dev.overture.bio"
-params.score_url = "https://score.azure-dev.overture.bio"
+params.song_url = "https://song.cancercollaboratory.org"
+params.score_url = "https://storage.cancercollaboratory.org"
 params.study_id = "PACA-CA"
 params.analysis_id = "dcf87a9f-2fdf-415d-9987-f41096849a60"
-params.data_files = []  // required
+params.metadata_only = null
 
 
-process legacySsUpload {
+process legacySsDownload {
   container "${params.container ?: container[params.container_registry ?: default_container_registry]}:${params.container_version ?: version}"
   publishDir "${params.publish_dir}/${task.process.replaceAll(':', '_')}", mode: "copy", enabled: params.publish_dir
 
   cpus params.cpus
   memory "${params.mem} GB"
 
+  maxRetries params.max_retries
+  errorStrategy {
+    if (params.max_retries && task.attempt <= params.max_retries && !(task.exitStatus in [130, 137])) {  // assume intentional kill yields 130, 137 exitcode
+      sleep(Math.pow(2, task.attempt) * params.first_retry_wait_time * 1000 as long);  // backoff time increases exponentially before each retry
+      return 'retry'
+    } else {
+      return 'finish'  // when max_retries is 0 or it's the last attempt, return 'finish' so other running / pending tasks will not be cancelled
+    }
+  }
+
   input:  // input, make update as needed
     val study_id
     val analysis_id
-    path data_files
     env ACCESS_TOKEN
 
-  output:
-    stdout emit: analysis_id
+  output:  // output, make update as needed
+    path "output_dir/*.payload.json", emit: payload_json
+    path "output_dir/data/*", emit: data_file optional true
 
   script:
     // add and initialize variables here as needed
+    arg_score_url = params.score_url ? "-r ${params.score_url}" : ""
+    arg_metadata_only = params.metadata_only ? "-m" : ""
+
     """
     export TRANSPORT_PARALLEL=${params.cpus}
     export TRANSPORT_MEMORY=${params.transport_mem}
 
+    mkdir -p output_dir
+
     main.py \
       -u ${params.song_url} \
-      -r ${params.score_url} \
       -s ${study_id} \
       -a ${analysis_id} \
-      -d ${data_files}
+      -o output_dir ${arg_score_url} ${arg_metadata_only}
 
-    echo -n ${analysis_id}
     """
 }
 
@@ -90,12 +105,9 @@ process legacySsUpload {
 // this provides an entry point for this main script, so it can be run directly without clone the repo
 // using this command: nextflow run <git_acc>/<repo>/<pkg_name>/<main_script>.nf -r <pkg_name>.v<pkg_version> --params-file xxx
 workflow {
-  data_files = Channel.fromPath(params.data_files)
-
-  legacySsUpload(
+  legacySsDownload(
     params.study_id,
     params.analysis_id,
-    data_files.collect(),
     params.api_token
   )
 }

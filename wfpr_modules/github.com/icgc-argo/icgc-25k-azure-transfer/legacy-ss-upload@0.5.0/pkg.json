@@ -1,13 +1,14 @@
 {
-    "name": "score-data-transfer",
-    "version": "0.2.0",
-    "description": "SCORE data transfer tool",
+    "name": "legacy-ss-upload",
+    "version": "0.5.0",
+    "description": "Legacy SONG/SCORE upload",
     "main": "main.nf",
     "deprecated": false,
     "keywords": [
         "bioinformatics",
-        "data transfer",
-        "score client"
+        "metadata",
+        "data",
+        "upload"
     ],
     "repository": {
         "type": "git",
@@ -27,7 +28,8 @@
     "devDependencies": [],
     "contributors": [
         {
-            "name": "Junjun Zhang"
+            "name": "Junjun Zhang",
+            "email": "junjun.ca@gmail.com"
         }
     ],
     "license": "GNU Affero General Public License v3",

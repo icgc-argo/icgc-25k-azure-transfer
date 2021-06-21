@@ -24,7 +24,7 @@
 /* this block is auto-generated based on info from pkg.json where   */
 /* changes can be made if needed, do NOT modify this block manually */
 nextflow.enable.dsl = 2
-version = '0.2.0'
+version = '0.3.0'
 
 container = [
     'ghcr.io': 'ghcr.io/icgc-argo/icgc-25k-azure-transfer.score-data-transfer'
@@ -67,8 +67,12 @@ process scoreDataTransfer {
 
   maxRetries params.max_retries
   errorStrategy {
-    sleep(Math.pow(2, task.attempt) * params.first_retry_wait_time * 1000 as long);  // backoff time increases exponentially before each retry
-    return (params.max_retries && !(task.exitStatus in [130, 137])) ? 'retry' : 'finish'  // assume intentional kill yields 137 exitcode
+    if (params.max_retries && task.attempt <= params.max_retries && !(task.exitStatus in [130, 137])) {  // assume intentional kill yields 130, 137 exitcode
+      sleep(Math.pow(2, task.attempt) * params.first_retry_wait_time * 1000 as long);  // backoff time increases exponentially before each retry
+      return 'retry'
+    } else {
+      return 'finish'  // when max_retries is 0 or it's the last attempt, return 'finish' so other running / pending tasks will not be cancelled
+    }
   }
 
   input:  // input, make update as needed
