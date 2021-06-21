@@ -151,7 +151,7 @@ workflow AzureTransferWf {
     if (params.cleanup && params.local_dir == 'NO_DIR') {
       cleanup(
         DownloadData.out.data_file.concat(DownloadMeta.out.payload_json).collect(),
-        Upload.out.analysis_id
+        Upload.out.analysis_id.collect()
       )
     }
 }
