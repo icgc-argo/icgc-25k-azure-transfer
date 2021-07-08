@@ -131,7 +131,7 @@ def submit_payload(song_url, study_id, payload, access_token, ignore_sid_mismatc
                 headers=headers
             )
             if res.status_code != 200:
-                sys.exit(f"Payload upload failed at save with status code: {res.status_code}")
+                sys.exit(f"Payload upload failed at save with status code: {res.status_code}. Response: {res.text}")
             else:
                 url = f"{song_url}/studies/{study_id}/analysis/{analysis_id}"
                 res = requests.get(url, headers=headers)
