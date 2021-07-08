@@ -127,13 +127,13 @@ def submit_payload(song_url, study_id, payload, access_token, ignore_sid_mismatc
         else:
             upload_id = res.json()['uploadId']
             res = requests.post(
-                f"{song_url}/upload/{study_id}/save/{upload_id}",
+                f"{song_url}/upload/{study_id}/save/{upload_id}?ignoreAnalysisIdCollisions=true",
                 headers=headers
             )
             if res.status_code != 200:
-                sys.exit(f"Payload upload failed at save with status code: {res.status_code}")
+                sys.exit(f"Payload upload failed at save with status code: {res.status_code}. Response: {res.text}")
             else:
-                url = f"{song_url}/studies/{study_id}/analysis/{analysis_id}?ignoreAnalysisIdCollisions=true"
+                url = f"{song_url}/studies/{study_id}/analysis/{analysis_id}"
                 res = requests.get(url, headers=headers)
                 if res.status_code == 200:
                     submitted_payload_dict = json.loads(res.text)
