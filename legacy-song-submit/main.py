@@ -133,7 +133,7 @@ def submit_payload(song_url, study_id, payload, access_token, ignore_sid_mismatc
             if res.status_code != 200:
                 sys.exit(f"Payload upload failed at save with status code: {res.status_code}")
             else:
-                url = f"{song_url}/studies/{study_id}/analysis/{analysis_id}"
+                url = f"{song_url}/studies/{study_id}/analysis/{analysis_id}?ignoreAnalysisIdCollisions=true"
                 res = requests.get(url, headers=headers)
                 if res.status_code == 200:
                     submitted_payload_dict = json.loads(res.text)
