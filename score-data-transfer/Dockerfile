@@ -1,4 +1,4 @@
-FROM ghcr.io/overture-stack/score:5.5.0
+FROM ghcr.io/overture-stack/score:d23f76c
 
 LABEL org.opencontainers.image.source https://github.com/icgc-argo/icgc-25k-azure-transfer
 
