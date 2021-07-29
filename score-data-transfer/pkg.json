@@ -1,6 +1,6 @@
 {
     "name": "score-data-transfer",
-    "version": "0.4.0",
+    "version": "0.5.0",
     "description": "SCORE data transfer tool",
     "main": "main.nf",
     "deprecated": false,
