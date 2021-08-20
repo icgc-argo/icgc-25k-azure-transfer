@@ -30,7 +30,11 @@ import requests
 
 def pop_sids(payload, study_id):
     sids = {
-        'objectIds': {}
+        'objectIds': {},
+        'sampleId': {},
+        'specimenId': {},
+        'donorId': {},
+        'studyId': {}
     }
 
     with open(payload, 'r') as p:
@@ -39,8 +43,9 @@ def pop_sids(payload, study_id):
     if 'sample' not in payload_dict:
         sys.exit("No 'sample' found in the payload.")
 
-    if len(payload_dict['sample']) != 1:
-        sys.exit(f"Payload must contain exactly one 'sample', {len(payload_dict['sample'])} found.")
+    # disable to allow multi-samples
+    # if len(payload_dict['sample']) != 1:
+    #     sys.exit(f"Payload must contain exactly one 'sample', {len(payload_dict['sample'])} found.")
 
     if payload_dict.get('study') != study_id:
         sys.exit(f"'study' in payload {payload_dict.get('study')} does not match study_id {study_id}")
@@ -52,12 +57,13 @@ def pop_sids(payload, study_id):
     payload_dict['experiment'].pop('analysisId', None)
 
     # rm sampleId, specimenId, donorId
-    sids['sampleId'] = payload_dict['sample'][0].pop('sampleId', None)
-    sids['specimenId'] = payload_dict['sample'][0].pop('specimenId', None)
-    payload_dict['sample'][0]['specimen'].pop('specimenId', None)
-    sids['donorId'] = payload_dict['sample'][0]['specimen'].pop('donorId', None)
-    payload_dict['sample'][0]['donor'].pop('donorId', None)
-    sids['studyId'] = payload_dict['sample'][0]['donor'].pop('studyId', None)
+    for sa in payload_dict['sample']:
+      sids['sampleId'][sa['sampleSubmitterId']] = sa.pop('sampleId', None)
+      sids['specimenId'][sa['specimen']['specimenSubmitterId']] = sa.pop('specimenId', None)
+      sa['specimen'].pop('specimenId', None)
+      sids['donorId'][sa['sampleSubmitterId']] = sa['specimen'].pop('donorId', None)
+      sa['donor'].pop('donorId', None)
+      sids['studyId'][sa['sampleSubmitterId']] = sa['donor'].pop('studyId', None)
 
     # rm file.objectId, file.studyId, file.analysisId
     for f in payload_dict['file']:
@@ -70,17 +76,18 @@ def pop_sids(payload, study_id):
 
 def verify_sids(payload, sids):
     mismatches = []
-    if sids['sampleId'] and sids['sampleId'] != payload['sample'][0]['sampleId']:
-        mismatches.append(f"'sampleId' mismatch, original: {sids['sampleId']}, new: {payload['sample'][0]['sampleId']}")
+    for sa in payload['sample']:
+      if sids['sampleId'] and sids['sampleId'][sa['sampleSubmitterId']] != sa['sampleId']:
+          mismatches.append(f"'sampleId' mismatch, original: {sids['sampleId'][sa['sampleSubmitterId']]}, new: {sa['sampleId']}")
 
-    if sids['specimenId'] and sids['specimenId'] != payload['sample'][0]['specimenId']:
-        mismatches.append(f"'specimenId' mismatch, original: {sids['specimenId']}, new: {payload['sample'][0]['specimenId']}")
+      if sids['specimenId'] and sids['specimenId'][sa['specimen']['specimenSubmitterId']] != sa['specimenId']:
+          mismatches.append(f"'specimenId' mismatch, original: {sids['specimenId'][sa['specimen']['specimenSubmitterId']]}, new: {sa['specimenId']}")
 
-    if sids['donorId'] and sids['donorId'] != payload['sample'][0]['donor']['donorId']:
-        mismatches.append(f"'donorId' mismatch, original: {sids['donorId']}, new: {payload['sample'][0]['donor']['donorId']}")
+      if sids['donorId'] and sids['donorId'][sa['sampleSubmitterId']] != sa['donor']['donorId']:
+          mismatches.append(f"'donorId' mismatch, original: {sids['donorId'][sa['sampleSubmitterId']]}, new: {sa['donor']['donorId']}")
 
-    if sids['studyId'] and sids['studyId'] != payload['sample'][0]['donor']['studyId']:
-        mismatches.append(f"'studyId' mismatch, original: {sids['studyId']}, new: {payload['sample'][0]['donor']['studyId']}")
+      if sids['studyId'] and sids['studyId'][sa['sampleSubmitterId']] != sa['donor']['studyId']:
+          mismatches.append(f"'studyId' mismatch, original: {sids['studyId'][sa['sampleSubmitterId']]}, new: {sa['donor']['studyId']}")
 
     for f in payload['file']:
         if sids['objectIds'].get(f['fileName']) and sids['objectIds'][f['fileName']] != f['objectId']:
