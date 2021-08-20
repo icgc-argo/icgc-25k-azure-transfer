@@ -108,7 +108,7 @@ def upload_data(song_url, score_url, study_id, analysis_id, access_token, data_f
 
     # score client upload
     upload_cmd = f'{transport_parallel_env} {transport_mem_env} METADATA_URL={song_url} STORAGE_URL={score_url} ACCESSTOKEN={access_token}'
-    upload_cmd += f' score-client --profile {profile} upload --manifest manifest.txt'
+    upload_cmd += f' score-client --profile {profile} upload --manifest manifest.txt --force'
 
     proc = subprocess.Popen(
                 upload_cmd,
