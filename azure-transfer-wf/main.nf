@@ -161,7 +161,7 @@ workflow AzureTransferWf {
     // example k8s emptyDir: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
     if (params.cleanup && params.local_dir == 'NO_DIR') {
       cleanup(
-        DownloadData.out.data_file.concat(DownloadMeta.out.payload_json).collect(),
+        DownloadData.out.data_file.collect(),
         Upload.out.analysis_id.collect()
       )
     }
