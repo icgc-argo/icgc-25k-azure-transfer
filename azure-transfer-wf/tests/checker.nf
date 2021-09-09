@@ -56,6 +56,7 @@ params.upload_cpus = null
 params.upload_mem = null
 params.upload_transport_mem = null
 
+params.enable_azure_songSub = false
 params.ignore_sid_mismatch = false
 
 params.download_song_url = "https://song.cancercollaboratory.org"

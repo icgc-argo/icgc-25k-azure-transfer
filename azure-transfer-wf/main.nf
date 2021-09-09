@@ -51,6 +51,7 @@ params.upload_cpus = null
 params.upload_mem = null
 params.upload_transport_mem = null
 
+params.enable_azure_songSub = false
 params.ignore_sid_mismatch = false
 
 params.download_song_url = "https://song.cancercollaboratory.org"
@@ -115,36 +116,43 @@ workflow AzureTransferWf {
 
   main:
     study_id = permissibleStudy(study_id)
+    
+    if (params.enable_azure_songSub) {
+      DownloadMeta(
+        study_id,
+        Channel.from(analysis_id),
+        api_token
+      )
 
-    DownloadMeta(
-      study_id,
-      Channel.from(analysis_id),
-      api_token
-    )
-
-    Submit(
-      study_id,
-      DownloadMeta.out.payload_json,
-      api_token
-    )
+      Submit(
+        study_id,
+        DownloadMeta.out.payload_json,
+        api_token
+      )
+      azure_analysis_id = Submit.out
+      
+    } else {
+      azure_analysis_id = analysis_id
+    }
+    
 
     if (params.local_dir == 'NO_DIR') {  // no local dir set
       DownloadData(
         study_id,
-        Submit.out,
+        azure_analysis_id,
         api_token
       )
 
       Upload(
         study_id,
-        Submit.out,
+        azure_analysis_id,
         DownloadData.out.data_file.collect(),
         api_token
       )
     } else {  // with local dir, perform download and upload together in one step
       Transfer(
         study_id,
-        Submit.out,
+        azure_analysis_id,
         api_token
       )
     }
